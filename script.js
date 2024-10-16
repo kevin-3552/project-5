@@ -126,7 +126,6 @@ function createWalls(A, B, H, D) {
       const BATARKOLON2 = new THREE.Mesh(BATARKOLON2Geometry, BATARKOLON1Material);
       BATARKOLON2.position.set(A/2, H/4, B/2-AZ)
       scene.add(BATARKOLON2);
-      if (AZ<10) {BATARKOLON2.visible=false;} else {BATARKOLON2.visible=true;}
 }
 
 
