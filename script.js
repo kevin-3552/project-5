@@ -132,7 +132,35 @@
         BATARKOLON2.position.set(A/2, H/4, B/2-AZ)
         scene.add(BATARKOLON2);
 
-    }       
+    }
+
+    function createBATAR5(A, B, H, D) {
+        
+
+        // 8.BATAR KAT
+        const batarTexture = textureLoader.load('textures/concrete.png'); // batar beton gökyüzü dokusu
+        const BATAR8Geometry = new THREE.BoxGeometry(A/3, DK , AZZ);
+        const BATARMaterial = new THREE.MeshBasicMaterial({ map: batarTexture, side: THREE.BackSide });
+        const BATAR8 = new THREE.Mesh(BATAR8Geometry, BATARMaterial);
+        BATAR8.position.set((A/6) , H/2, B/2 - AZZ/2) 
+        scene.add(BATAR8);
+        
+
+        // 9.BATAR KAT KOLON 1
+        const BATARKOLON1Geometry = new THREE.BoxGeometry(BKE, H/2, BKE);
+        const BATARKOLON1Material = new THREE.MeshBasicMaterial({ color: 0xba4a00 });
+        const BATARKOLON9 = new THREE.Mesh(BATARKOLON1Geometry, BATARKOLON1Material);
+        BATARKOLON9.position.set(A/3, H/4, B/2)
+        scene.add(BATARKOLON9);
+    
+        // 10.BATAR KAT KOLON 2
+        const BATARKOLON10Geometry = new THREE.BoxGeometry(BKE, H/2, BKE);
+        const BATARKOLON10 = new THREE.Mesh(BATARKOLON10Geometry, BATARKOLON1Material);
+        BATARKOLON10.position.set(A/3 , H/4, B/2-AZZ)
+        scene.add(BATARKOLON10);
+
+    }
+
 
     function createwallswithoffset(A, B, H, D, K, DK, AZ, BKE, offsetx) {
 
@@ -191,10 +219,11 @@
         const D = parseFloat(document.getElementById('D').value); // batar kat alanı
 
         AZ=(D/(A/2))   // ara kat uzunluğu - Alan / bina kısa kenarın yarısı
+        AZZ=D/(A/3)
         DK=0.3    // duvar kalınlığı
         BKE=0.4 // batar kat kolon
 
-        if (A<35) {createWalls(A, B, H, D, K, DK, AZ, BKE);} 
+        if (A<35) {createWalls(A, B, H, D, K, DK, AZ, BKE);createBATAR1(A, B, H, D)} 
 
         if (A>35) {
             const HS = Math.ceil(A / 35); // Hol sayısını belirle (aşağı yuvarla)
@@ -205,12 +234,14 @@
 
             while (scene.children.length > 3) 
                 scene.remove(scene.children[3]); 
-
+             
+            createBATAR5 (A,B,H, D);
+            
             for (let i = 0; i < HS; i++) {
                 const offsetx = i * A2; // X ekseninde kaydırma mesafesi
                 createwallswithoffset(A2, B, H, D, K, DK, AZ, BKE, offsetx); // Duvarları X ekseninde kaydırarak oluştur
-            
-                createBATAR1(A, B, H, D) 
+
+
 
             }
         }
