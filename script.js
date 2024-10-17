@@ -23,7 +23,6 @@ toggleButton.addEventListener("click", () => {
     }
 });
 
-
     const BKAT=0.5
     const K=1
 
@@ -40,7 +39,7 @@ toggleButton.addEventListener("click", () => {
     const groundTexture = textureLoader.load('textures/çim 2.png'); // Gerçekçi çim dokusu
     groundTexture.wrapS = THREE.RepeatWrapping;
     groundTexture.wrapT = THREE.RepeatWrapping;
-    groundTexture.repeat.set(25, 25);
+    groundTexture.repeat.set(25,25);
 
     const groundBumpMap = textureLoader.load('textures/çim 3.png'); // Çim için bump map
 
@@ -64,6 +63,8 @@ toggleButton.addEventListener("click", () => {
     const skyMaterial = new THREE.MeshBasicMaterial({ map: skyTexture, side: THREE.BackSide });
     const sky = new THREE.Mesh(skyGeometry, skyMaterial);
     scene.add(sky);
+
+
 
     // Kamera pozisyonu
     camera.position.z = 50;
@@ -272,6 +273,76 @@ toggleButton.addEventListener("click", () => {
     }
 
     animate();
+
+// Sabit bir dolar kuru API'den alınacak
+let dolarKuru = 1;
+
+// Dolar kurunu API'den al
+fetch('https://api.exchangerate-api.com/v4/latest/USD')
+    .then(response => response.json())
+    .then(data => {
+        dolarKuru = data.rates.TRY;
+        console.log('Güncel Dolar Kuru:', dolarKuru);
+    })
+    .catch(error => {
+        console.error('Dolar kuru alınırken hata oluştu:', error);
+    });
+
+// Maliyet hesaplama fonksiyonları
+function hesaplaMaliyet(A, B, H) {
+    // Bina yaklaşık çelik tonajı (BYÇT)
+    const BYÇT = A * B * (H / 8) * 60; // kg
+    const YÇM = BYÇT * 2; // Çelik maliyeti ($)
+
+    // Bina toplam cephe alanı (CA)
+    const CA = (A * 2 + B * 2) * H;
+
+    // Bina toplam çatı alanı (TÇA)
+    const TÇA = A * B;
+
+    // Toplam kaplama alanı (TKA)
+    const TKA = CA + TÇA;
+
+    // Toplam kaplama maliyeti (TKM)
+    const TKM = TÇA * 20; // $/m²
+
+    // Toplam saha betonu alanı (SBA)
+    const SBA = (A + 2) * (B + 2);
+
+    // Yaklaşık saha betonu hacmi (YSBH)
+    const YSBH = SBA * 0.2; // m³
+
+    // Yaklaşık saha betonu maliyeti (YSBM)
+    const YSBM = YSBH * 180; // $/m³
+
+    // Toplam yaklaşık kaba yapı maliyeti (TYKMD) DOLAR
+    const TYKMD = YÇM + TKM + YSBM; // Dolar cinsinden toplam maliyet
+
+    return { TYKMD, BYÇT, YÇM, TKM, YSBM };
+}
+
+// Butona basıldıktan sonra maliyet hesaplama ve gösterim
+document.getElementById('create').addEventListener('click', () => {
+    const A = parseFloat(document.getElementById('A').value);
+    const B = parseFloat(document.getElementById('B').value);
+    const H = parseFloat(document.getElementById('H').value);
+
+    // Maliyet hesapla
+    const { TYKMD, BYÇT, YÇM, TKM, YSBM } = hesaplaMaliyet(A, B, H);
+    const maliyetTRY = TYKMD * dolarKuru;
+
+    // Maliyet kutusunu göster
+    document.getElementById('maliyetBox').style.display = 'block';
+
+    // Maliyet değerlerini güncelle
+    document.getElementById('costUSD').textContent = TYKMD.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+    document.getElementById('costTRY').textContent = maliyetTRY.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
+    console.log(`Bina Çelik Tonajı: ${BYÇT.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} kg`);
+    console.log(`Yaklaşık Çelik Maliyeti: ${YÇM.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} $`);
+    console.log(`Toplam Kaplama Maliyeti: ${TKM.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} $`);
+    console.log(`Saha Betonu Maliyeti: ${YSBM.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} $`);
+});
+
 
     window.addEventListener('resize', function () {
         let width = window.innerWidth;
