@@ -120,7 +120,7 @@ toggleButton.addEventListener("click", () => {
         wall4.rotation.z = THREE.Math.degToRad(-10); // -10° açı yap
         scene.add(wall4);
 
-    }
+            }
 
     function createBATAR1(A, B, H, D) {
         
@@ -290,10 +290,13 @@ fetch('https://api.exchangerate-api.com/v4/latest/USD')
 
 // Maliyet hesaplama fonksiyonları
 function hesaplaMaliyet(A, B, H, D) {
+
+    // ara kat tonajı
+    AKT = D*50
+
     // Bina yaklaşık çelik tonajı (BYÇT)
     
-
-    const BYÇT = (A * B * (H / 8) * 60); // kg
+    const BYÇT = (A * B * (H / 8) * 60) +AKT; // kg
 
     const YÇM = BYÇT * 2; // Çelik maliyeti ($)
 
@@ -309,12 +312,15 @@ function hesaplaMaliyet(A, B, H, D) {
     // Toplam kaplama maliyeti (TKM)
     const TKM = TKA * 20; // $/m²
 
+     // ARA KAT SAHA BETONU
+     AKSB = D*0.12
 
     // Toplam saha betonu alanı (SBA)
     const SBA = ((A + 2) * (B + 2) );
+   
 
       // Yaklaşık saha betonu hacmi (YSBH)
-    const YSBH = SBA * 0.2; // m³
+    const YSBH = SBA * 0.2 + AKSB; // m³
 
     // Yaklaşık saha betonu maliyeti (YSBM)
     const YSBM = YSBH * 180; // $/m³
@@ -334,7 +340,7 @@ document.getElementById('create').addEventListener('click', () => {
 
 
     // Maliyet hesapla
-    const { TYKMD, BYÇT, YÇM, TKM, YSBM } = hesaplaMaliyet(A, B, H);
+    const { TYKMD, BYÇT, YÇM, TKM, YSBM } = hesaplaMaliyet(A, B, H, D);
     const maliyetTRY = TYKMD * dolarKuru;
 
     // Maliyet kutusunu göster
@@ -342,11 +348,11 @@ document.getElementById('create').addEventListener('click', () => {
 
     // Maliyet değerlerini güncelle
     document.getElementById('costUSD').textContent = TYKMD.toLocaleString('tr-TR', { minimumFractionDigits: 0});
-    document.getElementById('costTRY').textContent = maliyetTRY.toLocaleString('tr-TR', { minimumFractionDigits: 0});
+    document.getElementById('costTRY').textContent = maliyetTRY.toLocaleString('tr-TR', { maximumFractionDigits: 0});
 
     // Ek bilgileri güncelle
     const kapaliAlan = (A * B).toLocaleString('tr-TR', { minimumFractionDigits: 0});
-    const toplamCelik = BYÇT.toLocaleString('tr-TR', { minimumFractionDigits: 0});
+    const toplamCelik = (BYÇT/1000).toLocaleString('tr-TR', { minimumFractionDigits: 0});
     const toplamKaplama = (A * B + (A * 2 + B * 2) * H).toLocaleString('tr-TR', { minimumFractionDigits: 0});
     const sahaBetonu = ((A + 2) * (B + 2) * 0.2).toLocaleString('tr-TR', { minimumFractionDigits: 0 });
 
@@ -357,10 +363,29 @@ document.getElementById('create').addEventListener('click', () => {
 
     // Dinamik olarak hesaplanan değerleri HTML'de güncelle
     document.getElementById("kapaliAlan").textContent = `${kapaliAlan}`;
-    document.getElementById("toplamCelik").innerHTML = `${toplamCelik} kg - ${toplamCelikParasi}`;
+    document.getElementById("toplamCelik").innerHTML = `${toplamCelik} ton - ${toplamCelikParasi}`;
     document.getElementById("toplamKaplama").innerHTML = `${toplamKaplama} m² - ${toplamKaplamaParasi}`;
     document.getElementById("sahaBetonu").innerHTML = `${sahaBetonu} m³ - ${sahaBetonuParasi}`;
+
+// Gizle/Göster işlevi
+const maliyetBox = document.getElementById('maliyetBox');
+const maliyetToggleButton = document.getElementById('maliyetToggleButton');
+
+maliyetToggleButton.addEventListener('click', () => {
+    if (maliyetBox.style.display === 'none') {
+        maliyetBox.style.display = 'block';
+        maliyetToggleButton.textContent = '▲';
+    } else {
+        maliyetBox.style.display = 'none';
+        maliyetToggleButton.textContent = '▼';
+    }
 });
+
+
+    
+});
+
+
 
 
 
