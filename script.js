@@ -9,6 +9,21 @@
     // Orbit Controls ekleyelim
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
+    // Formu gizlemek/göstermek için buton ayarları
+const form = document.getElementById("form");
+const toggleButton = document.getElementById("toggleButton");
+
+toggleButton.addEventListener("click", () => {
+    if (form.style.display === "none") {
+        form.style.display = "block";
+        toggleButton.innerHTML = "▲"; // Form açıldığında yukarı ok göster
+    } else {
+        form.style.display = "none";
+        toggleButton.innerHTML = "▼"; // Form kapandığında aşağı ok göster
+    }
+});
+
+
     const BKAT=0.5
     const K=1
 
