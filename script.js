@@ -132,14 +132,7 @@
         BATARKOLON2.position.set(A/2, H/4, B/2-AZ)
         scene.add(BATARKOLON2);
 
-    }
-
-    function createwallswithoffset2(A, B, H, D, K, DK, AZ, BKE, offsetx) {}
-        // Eski duvarları temizle
-        while (scene.children.length > 3) 
-            scene.remove(scene.children[3]); 
-
-        
+    }       
 
     function createwallswithoffset(A, B, H, D, K, DK, AZ, BKE, offsetx) {
 
