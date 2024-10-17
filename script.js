@@ -289,9 +289,12 @@ fetch('https://api.exchangerate-api.com/v4/latest/USD')
     });
 
 // Maliyet hesaplama fonksiyonları
-function hesaplaMaliyet(A, B, H) {
+function hesaplaMaliyet(A, B, H, D) {
     // Bina yaklaşık çelik tonajı (BYÇT)
-    const BYÇT = A * B * (H / 8) * 60; // kg
+    
+
+    const BYÇT = (A * B * (H / 8) * 60); // kg
+
     const YÇM = BYÇT * 2; // Çelik maliyeti ($)
 
     // Bina toplam cephe alanı (CA)
@@ -304,12 +307,13 @@ function hesaplaMaliyet(A, B, H) {
     const TKA = CA + TÇA;
 
     // Toplam kaplama maliyeti (TKM)
-    const TKM = TÇA * 20; // $/m²
+    const TKM = TKA * 20; // $/m²
+
 
     // Toplam saha betonu alanı (SBA)
-    const SBA = (A + 2) * (B + 2);
+    const SBA = ((A + 2) * (B + 2) );
 
-    // Yaklaşık saha betonu hacmi (YSBH)
+      // Yaklaşık saha betonu hacmi (YSBH)
     const YSBH = SBA * 0.2; // m³
 
     // Yaklaşık saha betonu maliyeti (YSBM)
@@ -326,6 +330,8 @@ document.getElementById('create').addEventListener('click', () => {
     const A = parseFloat(document.getElementById('A').value);
     const B = parseFloat(document.getElementById('B').value);
     const H = parseFloat(document.getElementById('H').value);
+    const D = parseFloat(document.getElementById('D').value);
+
 
     // Maliyet hesapla
     const { TYKMD, BYÇT, YÇM, TKM, YSBM } = hesaplaMaliyet(A, B, H);
@@ -335,13 +341,28 @@ document.getElementById('create').addEventListener('click', () => {
     document.getElementById('maliyetBox').style.display = 'block';
 
     // Maliyet değerlerini güncelle
-    document.getElementById('costUSD').textContent = TYKMD.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
-    document.getElementById('costTRY').textContent = maliyetTRY.toLocaleString('tr-TR', { minimumFractionDigits: 2 });
-    console.log(`Bina Çelik Tonajı: ${BYÇT.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} kg`);
-    console.log(`Yaklaşık Çelik Maliyeti: ${YÇM.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} $`);
-    console.log(`Toplam Kaplama Maliyeti: ${TKM.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} $`);
-    console.log(`Saha Betonu Maliyeti: ${YSBM.toLocaleString('tr-TR', { minimumFractionDigits: 2 })} $`);
+    document.getElementById('costUSD').textContent = TYKMD.toLocaleString('tr-TR', { minimumFractionDigits: 0});
+    document.getElementById('costTRY').textContent = maliyetTRY.toLocaleString('tr-TR', { minimumFractionDigits: 0});
+
+    // Ek bilgileri güncelle
+    const kapaliAlan = (A * B).toLocaleString('tr-TR', { minimumFractionDigits: 0});
+    const toplamCelik = BYÇT.toLocaleString('tr-TR', { minimumFractionDigits: 0});
+    const toplamKaplama = (A * B + (A * 2 + B * 2) * H).toLocaleString('tr-TR', { minimumFractionDigits: 0});
+    const sahaBetonu = ((A + 2) * (B + 2) * 0.2).toLocaleString('tr-TR', { minimumFractionDigits: 0 });
+
+    // Parasal karşılıkları hesapla
+    const toplamCelikParasi = `<span style="color:blue;">${YÇM.toLocaleString('tr-TR', { minimumFractionDigits: 0})} $</span>`;
+    const toplamKaplamaParasi = `<span style="color:blue;">${TKM.toLocaleString('tr-TR', { minimumFractionDigits: 0})} $</span>`;
+    const sahaBetonuParasi = `<span style="color:blue;">${YSBM.toLocaleString('tr-TR', { minimumFractionDigits: 0})} $</span>`;
+
+    // Dinamik olarak hesaplanan değerleri HTML'de güncelle
+    document.getElementById("kapaliAlan").textContent = `${kapaliAlan}`;
+    document.getElementById("toplamCelik").innerHTML = `${toplamCelik} kg - ${toplamCelikParasi}`;
+    document.getElementById("toplamKaplama").innerHTML = `${toplamKaplama} m² - ${toplamKaplamaParasi}`;
+    document.getElementById("sahaBetonu").innerHTML = `${sahaBetonu} m³ - ${sahaBetonuParasi}`;
 });
+
+
 
 
     window.addEventListener('resize', function () {
