@@ -5,19 +5,47 @@
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>3D BİNA MODELLEME</title>
     <style>
-        body { margin: 0;  font-family: 'Roboto', sans-serif; /* Roboto fontunu body'e uyguladık */}
-        canvas { display: block; }
+        body { 
+            margin: 0;  
+            font-family: 'Roboto', sans-serif; /* Roboto fontunu body'e uyguladık */
+        }
+        canvas { 
+            display: block; 
+        }
         #form {
             position: absolute;
             top: 10px;
             left: 10px;
             z-index: 10;
-            background: white;
+            background-color: rgba(255, 255, 255, 0.5); /* Transparanlık eklendi */
             padding: 10px;
             border-radius: 8px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            width: 300px; /* Form genişliği artırıldı */
+        }
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1px;
+            margin-top: 1px
+        }
+        .form-row label {
+            flex: 1;
+            margin-right: 10px;
+            width: 200px; /* Etiketlerin genişliği artırıldı */
+        }
+        .form-row input {
+            width: 40px; /* Giriş kutuları daha dar hale getirildi */
+            background-color: rgba(255, 255, 255, 0.5); /* Giriş kutuları için transparan arka plan */
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 4px;
+
+
         }
         #toggleButton {
             position: absolute;
@@ -30,6 +58,20 @@
             cursor: pointer;
             border-radius: 4px;
         }
+
+        html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Tüm sayfayı kaplayacak şekilde */
+    overflow: hidden; /* Taşmayı gizlemek için */
+}
+
+canvas {
+    display: block;
+    width: 100vw; /* Görüntüleme genişliği */
+    height: 100vh; /* Görüntüleme yüksekliği */
+}
+
     </style>
 </head>
 <body>
@@ -37,39 +79,53 @@
     <button id="toggleButton">▲</button>
 
     <div id="form">
-        <label for="A">A (Bina Ön Cephe Genişliği):</label>
-        <input type="number" id="A" value="20"><br>
-        <label for="B">B (Bina Uzunluğu):</label>
-        <input type="number" id="B" value="60"><br>
-        <label for="H">H (Bina Yüksekliği - kolon):</label>
-        <input type="number" id="H" value="12"><br>
-        <label for="D">D (Ara Kat Alanı):</label>
-        <input type="number" id="D" value="100"><br>
+        <div class="form-row">
+            <label for="A">A - Bina Ön Cephe Genişliği:</label>
+            <input type="number" id="A" value="20">
+        </div>
+        <div class="form-row">
+            <label for="B">B - Bina Uzunluğu:</label>
+            <input type="number" id="B" value="50">
+        </div>
+        <div class="form-row">
+            <label for="H">H - Bina Yüksekliği - kolon:</label>
+            <input type="number" id="H" value="12">
+        </div>
+        <div class="form-row">
+            <label for="D">D - Ara Kat Alanı m²:</label>
+            <input type="number" id="D" value="300">
+        </div>
         <button id="create">Oluştur</button>
     </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
     <script src="script.js"></script>
 
 <!-- Maliyet kutusunun dışına buton ekleyelim -->
-<button id="maliyetToggleButton" style="position: absolute; bottom: 190px; left: 10px; background: lightgray; border: none; padding: 4px; border-radius: 50%; cursor: pointer; z-index: 20;">▲</button>
+<button id="maliyetToggleButton" style="position: absolute; bottom: 160px; left: 10px; background: rgba(31, 65, 128, 0.4); border: none; padding: 4px; border-radius: 50%; cursor: pointer; z-index: 20;">▲</button>
 
-<div id="maliyetBox" style="position: absolute; bottom: 1.5px; left: 3px; z-index: 11; background: white; padding: 2px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); font-family: 'Roboto', sans-serif;">
-    <p style="font-weight: bold; margin-bottom: 6px; margin-top: 2px; line-height: 1.2;">
-        Bina yaklaşık maliyeti - USD: <span id="costUSD">...</span> $
+<div id="maliyetBox" style="position: absolute; bottom: 1.5px; left: 3px; z-index: 11; background: rgba(93, 85, 131, 0.4); padding: 2px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); font-family: 'Roboto', sans-serif;">
+    <p style="font-weight: normal; color: yellow; margin-bottom: 6px; margin-top: 2px; line-height: 1.5;font-size: 17px;">
+        <span style="float: left;padding-right: 20px;">Bina yaklaşık maliyeti - USD:   </span> 
+        <span id="costUSD" style="float: right;"></span> 
     </p>
-    <p style="font-weight: bold; margin-top: 2px; margin-bottom: 2px; line-height: 1.2; color: #21421e;">
-        TL  maliyet yaklaşık: <span id="costTRY">...</span> ₺
+    <p style="font-weight: normal; margin-top: 2px; margin-bottom: 2px; line-height: 1.5; color: yellow;font-size: 17px; clear: both;">
+        <span style="float: left;">TL maliyet yaklaşık:</span> 
+        <span id="costTRY" style="float: right;"></span>
     </p>
-    <p style="color: red; font-size: 17px; font-style: normal; line-height: 1.5;margin-bottom: 2px ">
-        <span style="color: rgba(28, 13, 112, 0.878);">Kapalı Alan = <span id="kapaliAlan">......</span> m²</span><br>
-        çelik işi = <span id="toplamCelik">..... ton</span><br>
-        kaplama işleri = <span id="toplamKaplama">...... m²</span><br>
-        saha betonu = <span id="sahaBetonu">....... m³</span>
+    <p style="color: yellow; font-size: 17px; font-style: normal; line-height: 1.5; margin-bottom: 2px; clear: both;">
+        <span style="float: left;">Kapalı Alan: </span> 
+        <span id="kapaliAlan" style="float: right;"></span><br>
+        <span style="float: left;">Çelik Konst: </span> 
+        <span id="toplamCelik" style="float: right;"></span> <br>
+        <span style="float: left;">Kaplama İşleri:</span> 
+        <span id="toplamKaplama" style="float: right;"></span><br>
+        <span style="float: left;">Saha Betonu:</span> 
+        <span id="sahaBetonu" style="float: right;"></span>
     </p>
 </div>
-        
     
         
 </body>
