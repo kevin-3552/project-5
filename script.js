@@ -732,3 +732,17 @@ maliyetToggleButton.addEventListener('click', () => {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
     });
+
+
+  // Resize olduğunda ekranın boyutlarını güncelle
+  window.addEventListener('resize', () => {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+
+    // Kamera en-boy oranını güncelle
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+
+    // Renderer boyutlarını güncelle
+    renderer.setSize(width, height);
+  });
