@@ -1,133 +1,39 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>3D BİNA MODELLEME</title>
-    <style>
-        body { 
-            margin: 0;  
-            font-family: 'Roboto', sans-serif; /* Roboto fontunu body'e uyguladık */
-        }
-        canvas { 
-            display: block; 
-        }
-        #form {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
-            background-color: rgba(255, 255, 255, 0.5); /* Transparanlık eklendi */
-            padding: 10px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            width: 300px; /* Form genişliği artırıldı */
-        }
-        .form-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1px;
-            margin-top: 1px
-        }
-        .form-row label {
-            flex: 1;
-            margin-right: 10px;
-            width: 200px; /* Etiketlerin genişliği artırıldı */
-        }
-        .form-row input {
-            width: 40px; /* Giriş kutuları daha dar hale getirildi */
-            background-color: rgba(255, 255, 255, 0.5); /* Giriş kutuları için transparan arka plan */
-            border: 1px solid #ccc;
-            padding: 5px;
-            border-radius: 4px;
-
-
-        }
-        #toggleButton {
-            position: absolute;
-            top: 0;
-            left: 10px;
-            z-index: 11;
-            background: lightgray;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%; /* Tüm sayfayı kaplayacak şekilde */
-    overflow: hidden; /* Taşmayı gizlemek için */
-}
-
-canvas {
-    display: block;
-    width: 100vw; /* Görüntüleme genişliği */
-    height: 100vh; /* Görüntüleme yüksekliği */
-}
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>3D Bina Modelleme</title>
+  <link rel="icon" href="textures/fav12.png" type="image/x-icon">
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; }
+    canvas { display: block; }
+    #toggleButton {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 10;
+      padding: 5px; 
+      background-color: #007BFF;
+      color: white; 
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 12px;
+      transition: font-size 0.1s, padding 0.1s;   
+    }
+    #toggleButton:hover {
+      background-color: #0056b3;
+    }
+      </style>
 </head>
 <body>
-    <!-- Formu gizlemek için buton -->
-    <button id="toggleButton">▲</button>
 
-    <div id="form">
-        <div class="form-row">
-            <label for="A">A - Bina Ön Cephe Genişliği:</label>
-            <input type="number" id="A" value="20">
-        </div>
-        <div class="form-row">
-            <label for="B">B - Bina Uzunluğu:</label>
-            <input type="number" id="B" value="50">
-        </div>
-        <div class="form-row">
-            <label for="H">H - Bina Yüksekliği - kolon:</label>
-            <input type="number" id="H" value="12">
-        </div>
-        <div class="form-row">
-            <label for="D">D - Ara Kat Alanı m²:</label>
-            <input type="number" id="D" value="300">
-        </div>
-        <button id="create">Oluştur</button>
-    </div>
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/FlyControls.js"></script>
+  <script type="module" src="app.js"></script>
 
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128/examples/js/controls/OrbitControls.js"></script>
-    <script src="script.js"></script>
-
-<!-- Maliyet kutusunun dışına buton ekleyelim -->
-<button id="maliyetToggleButton" style="position: absolute; bottom: 160px; left: 10px; background: rgba(31, 65, 128, 0.4); border: none; padding: 4px; border-radius: 50%; cursor: pointer; z-index: 20;">▲</button>
-
-<div id="maliyetBox" style="position: absolute; bottom: 1.5px; left: 3px; z-index: 11; background: rgba(93, 85, 131, 0.4); padding: 2px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); font-family: 'Roboto', sans-serif;">
-    <p style="font-weight: normal; color: yellow; margin-bottom: 6px; margin-top: 2px; line-height: 1.5;font-size: 17px;">
-        <span style="float: left;padding-right: 20px;">Bina yaklaşık maliyeti - USD:   </span> 
-        <span id="costUSD" style="float: right;"></span> 
-    </p>
-    <p style="font-weight: normal; margin-top: 2px; margin-bottom: 2px; line-height: 1.5; color: yellow;font-size: 17px; clear: both;">
-        <span style="float: left;">TL maliyet yaklaşık:</span> 
-        <span id="costTRY" style="float: right;"></span>
-    </p>
-    <p style="color: yellow; font-size: 17px; font-style: normal; line-height: 1.5; margin-bottom: 2px; clear: both;">
-        <span style="float: left;">Kapalı Alan: </span> 
-        <span id="kapaliAlan" style="float: right;"></span><br>
-        <span style="float: left;">Çelik Konst: </span> 
-        <span id="toplamCelik" style="float: right;"></span> <br>
-        <span style="float: left;">Kaplama İşleri:</span> 
-        <span id="toplamKaplama" style="float: right;"></span><br>
-        <span style="float: left;">Saha Betonu:</span> 
-        <span id="sahaBetonu" style="float: right;"></span>
-    </p>
-</div>
-    
-        
 </body>
 </html>
