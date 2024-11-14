@@ -5,6 +5,9 @@
 export let vinçcheckbox 
 export let İlkkutu
 export let hideButton
+export let bodrumCheckbox
+window.mobilpikselkenar = 130
+
 import {} from './app.js'
 import { ÇelikTonajı , dolarKuru, checkDolarKuruReady} from './maliyet.js';  // 
 import translations from './translations.js';
@@ -44,13 +47,15 @@ export function İLKFORM() {
         labelCell.setAttribute('data-label', labelKey);
 
         const inputCell = document.createElement('td');
-        inputCell.style.padding = '6px';
-
         const input = document.createElement('input');
+
+        if (window.innerWidth < 768) { // Mobil cihazlar için
+            inputCell.style.padding = '3px';  input.style.width = '90%';}
+            else { inputCell.style.padding = '6px'; input.style.width = '100%'  }
+
         input.type = 'number';
         input.id = inputId;
         input.value = defaultValue;
-        input.style.width = '100%';
         input.style.padding = '5px';
         input.style.borderRadius = '4px';
         input.style.border = '1px solid #ccc';
@@ -73,7 +78,7 @@ export function İLKFORM() {
     const vinçcheckboxkutu = document.createElement('div');
     vinçcheckboxkutu.style.display = 'flex';
     vinçcheckboxkutu.style.alignItems = 'center';
-    vinçcheckboxkutu.style.marginTop = '3px';
+    vinçcheckboxkutu.style.marginTop = '5px';
 
     vinçcheckbox = document.createElement('input');
     vinçcheckbox.type = 'checkbox';
@@ -84,7 +89,45 @@ export function İLKFORM() {
     vinçcheckboxLabel.setAttribute('data-label', 'craneCheckboxLabel');
     vinçcheckboxkutu.appendChild(vinçcheckbox);
     vinçcheckboxkutu.appendChild(vinçcheckboxLabel);
-    İlkkutu.appendChild(vinçcheckboxkutu);
+
+        // Bodrum Kat Checkbox ve Label
+const bodrumCheckboxContainer = document.createElement('div');
+bodrumCheckboxContainer.style.display = 'flex';
+bodrumCheckboxContainer.style.alignItems = 'center';
+bodrumCheckboxContainer.style.marginTop = '5px';
+bodrumCheckboxContainer.style.marginRight = '3px';
+bodrumCheckboxContainer.style.marginBottom = '0px';
+
+bodrumCheckbox = document.createElement('input');
+bodrumCheckbox.type = 'checkbox';
+bodrumCheckbox.id = 'bodrumCheckbox';
+bodrumCheckbox.checked = true;
+
+
+const bodrumLabel = document.createElement('label');
+bodrumLabel.setAttribute('for', 'bodrumCheckbox');
+bodrumLabel.style.fontSize = '14px'; // Yazı font boyutu
+bodrumLabel.setAttribute('data-label', 'bodrumlabel');
+
+bodrumCheckboxContainer.appendChild(bodrumCheckbox);
+bodrumCheckboxContainer.appendChild(bodrumLabel);
+
+// Üst kapsayıcı oluşturma
+const üstKapsayıcı = document.createElement('div');
+üstKapsayıcı.style.display = 'flex'; // Yatay yerleşim
+üstKapsayıcı.style.alignItems = 'center'; // Dikeyde hizalama
+üstKapsayıcı.style.gap = '10px'; // İki kutu arasındaki boşluk
+
+// Vinç checkbox kutusunu ekleme
+üstKapsayıcı.appendChild(vinçcheckboxkutu);
+
+// Bodrum checkbox kutusunu ekleme
+üstKapsayıcı.appendChild(bodrumCheckboxContainer);
+
+// Üst kapsayıcıyı İlkkutu içine ekleme
+İlkkutu.appendChild(üstKapsayıcı);
+
+
 
     // 3D Bina Modelle Butonu
     const createButton = document.createElement('button');
@@ -117,23 +160,6 @@ export function İLKFORM() {
     } else { // PC veya daha geniş ekranlar için
         hideButton.style.left = '220px';
     }
-
-    hideButton.addEventListener('mousedown', () => {
-        hideButton.style.filter = 'brightness(0.8)';
-        hideButton.style.transform = 'scale(0.95)';
-    });
-    
-    hideButton.addEventListener('mouseup', () => {
-        hideButton.style.filter = '';
-        hideButton.style.transform = '';
-    });
-    
-    hideButton.addEventListener('mouseleave', () => {
-        hideButton.style.filter = '';
-        hideButton.style.transform = '';
-    });
-    
-
     document.body.appendChild(hideButton);
 
 

@@ -7,11 +7,14 @@ const translations = {
         boyLabel: 'Boy (B):',
         yukseklikLabel: 'Yükseklik:',
         aksArasiLabel: 'Aks-m:',
-        craneCheckboxLabel: 'vinç yolu',
+        craneCheckboxLabel: 'vinç',
         metalYapi: "Metal Yapı",
         maliyet: "Maliyet",
         maliyetUsd: "Maliyet (USD)",
         whatsappLink: "WhatsApp'ta paylaş",
+        hideButtonText: 'gizle',
+        bodrumlabel:  'bodrum'
+
 
     },
     en: {
@@ -21,11 +24,14 @@ const translations = {
         boyLabel: 'Length(B):',
         yukseklikLabel: 'Height(H):',
         aksArasiLabel: 'Axis:',
-        craneCheckboxLabel: 'Crane Rail',
+        craneCheckboxLabel: 'crane',
         metalYapi: "Metal Structure",
         maliyet: "Cost",
         maliyetUsd: "Cost (USD)",
         whatsappLink: "Share on WhatsApp",
+        hideButtonText: 'hide',
+        bodrumlabel:  'basem.'
+
 
     },
     ar: {
@@ -40,6 +46,10 @@ const translations = {
         maliyet: "التكلفة",
         maliyetUsd: "التكلفة (بالدولار الأمريكي)",
         whatsappLink: "شارك على الواتساب",
+        hideButtonText: 'يخفي',
+        bodrumlabel:  'الطابق السفلي'
+
+
 
     }
 };

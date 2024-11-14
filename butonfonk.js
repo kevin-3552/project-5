@@ -14,24 +14,29 @@ export let CepheKaplamaCons
 export let SolÇatıKaplamacons
 export let vinçkirişicons
 export let triangleWrapper
+export let ZeminEkleConst
+export let çimekleconst
+export let groundGroup
 
 //#endregion
 
 //#region IMPORT'lar
 // App.js den ve container.js den 
-import { scene, camera, renderer, controls, } from './app.js'
-import { vinçcheckbox, maliyetgösterfonk } from './container.js'
+import { ÇimZeminMalzeme1 } from './malzemeler.js'
+
+import { scene, camera, renderer, controls } from './app.js'
+import { vinçcheckbox, maliyetgösterfonk, bodrumCheckbox } from './container.js'
 
 
 
 // Nesneler
 import { YATAYKOLONGRUBU, SOLDİYAGONELGRUBU, SAĞDİYAGONELGRUBU, MakasGrupÇoğalt, YanKiriş_1, MakasİçiAltTamBracing, 
     Bracing_MakasİçiTam, ÇaprazYanKomple, ÇatıÇapraz1MakasGrup, ÇatıÇaprazTam, Totem1,CepheKaplamaSağSol, SolÇatıKaplama,
-MK_UZUNLUK, ZEMİNESAS, VinçKirişi, VincKancasi, loadedFont, DKG} from './nesneler.js';  // 
+MK_UZUNLUK, VinçKirişi, VincKancasi, loadedFont, DKG, TEMELGRUP} from './nesneler.js';  // 
   
 // Hesaplar
 import { DİKMEHESAPLA, hesaplaDüşeyAks, hesaplaYatayKolon, ÇATIEĞİMHETKİSİHESAP, MAKASBOYUHESAP, 
-ZEMİNESASEBATHESAP, YanBağKirişHesap , ÇaprazYanHesap, KaplamaSınırHesap, ArkaKaplamaSınır } from './hesapla.js'; 
+ZEMİNESASEBATHESAP, YanBağKirişHesap , ÇaprazYanHesap, KaplamaSınırHesap, ArkaKaplamaSınır, esaszeminA, esaszeminB } from './hesapla.js'; 
   
 // Hesapla Const
 import { MKAÇI, YanKirişArası, YanBağKirişAdet, YATAYHOLGENİŞLİĞİ, DÜŞEYHOLSAYISI, DÜŞEYHOLGENİŞLİĞİ ,
@@ -53,7 +58,6 @@ export function üçdbutonabas (A, B, K,H) {
           if (kolonGrubu) {scene.remove(kolonGrubu);}
           if (soldiyagonelGrup) {scene.remove(soldiyagonelGrup);}
           if (sağdiyagonelGrup) {scene.remove(sağdiyagonelGrup);}
-          if (zeminesascons) { scene.remove(zeminesascons); }
           if (makasçoğal) { scene.remove(makasçoğal);}
           if (yankirişcons) { scene.remove(yankirişcons);}
           if (makasiçibracingTamCons) { scene.remove(makasiçibracingTamCons);}
@@ -63,7 +67,8 @@ export function üçdbutonabas (A, B, K,H) {
           if (CepheKaplamaCons) { scene.remove(CepheKaplamaCons);}
           if (SolÇatıKaplamacons) { scene.remove(SolÇatıKaplamacons);}
           if (vinçkirişicons) { scene.remove(vinçkirişicons);}
-                  
+          if (  çimekleconst) { scene.remove(  çimekleconst);}
+                          
           A = parseFloat(document.getElementById('A').value);  
           B = parseFloat(document.getElementById('B').value);   
           H = parseFloat(document.getElementById('H').value);  
@@ -89,7 +94,6 @@ export function üçdbutonabas (A, B, K,H) {
           soldiyagonelGrup = SOLDİYAGONELGRUBU(H);
           sağdiyagonelGrup = SAĞDİYAGONELGRUBU(H);
           makasçoğal = MakasGrupÇoğalt(H);
-          zeminesascons =ZEMİNESAS(A, B);
           yankirişcons = YanKiriş_1(H, A);
           makasiçibracingTamCons =  Bracing_MakasİçiTam(H)
           ÇaprazYanCons = ÇaprazYanKomple(H)
@@ -102,8 +106,6 @@ export function üçdbutonabas (A, B, K,H) {
           scene.add(kolonGrubu);  
           scene.add(soldiyagonelGrup); 
           scene.add(sağdiyagonelGrup); 
-          scene.add(zeminesascons);  
-          scene.add(zeminesascons);
           scene.add(makasçoğal);
           scene.add(yankirişcons);
           scene.add(makasiçibracingTamCons);
@@ -116,12 +118,59 @@ export function üçdbutonabas (A, B, K,H) {
                   scene.add(vinçkirişicons);  // Vinç kirişini sahneye ekle
               } else {
               }
-        
+
+              çimekleçıkar(A, B);
+              ZEMİNESAS(A, B)
+              TEMELGRUP(A,B)
+
                 
       //#endregion buton iç fonksiyon detay bitiş  
 
         };
 //#endregion
+
+
+//#region Zemin - Beton
+// ZEMİNESAS fonksiyonu
+export function ZEMİNESAS(A, B) {
+  const updateGround = () => {
+      const mevcutZemin = scene.getObjectByName('zeminEsas');
+      if (mevcutZemin) {
+          scene.remove(mevcutZemin); // Önceki zemin varsa kaldır
+      }
+
+      if (!bodrumCheckbox.checked) {
+          // Bodrum işaretli değilse zemin oluştur ve sahneye ekle
+          const ZEMİNESAS_TEXTURE = new THREE.TextureLoader().load('textures/zemin9.png');
+          ZEMİNESAS_TEXTURE.wrapS = THREE.RepeatWrapping;
+          ZEMİNESAS_TEXTURE.wrapT = THREE.RepeatWrapping;
+          ZEMİNESAS_TEXTURE.repeat.set(1, 1);  // Zemin dokusunun tekrarlanmasını sağlar
+
+          const groundGeometry = new THREE.PlaneGeometry(esaszeminA, esaszeminB);  // Zemin ebatları
+          const groundMaterial = new THREE.MeshBasicMaterial({
+              map: ZEMİNESAS_TEXTURE,
+              side: THREE.DoubleSide // Zeminin iki yüzüne de doku ekler
+          });
+
+          const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial);
+          groundMesh.rotation.x = -Math.PI / 2;  // Yatay hale getiriyoruz
+          groundMesh.position.set(A / 2, -0.1, -B / 2);  // Pozisyon ayarlanıyor
+          groundMesh.name = 'zeminEsas'; // Benzersiz isim
+
+          scene.add(groundMesh); // Sahneye ekle
+      }
+  };
+
+  // Bodrum checkbox değişimini dinle
+  bodrumCheckbox.addEventListener('change', updateGround);
+
+  // İlk çağrıda zemin durumu güncelle
+  updateGround();
+}
+
+// #endregion 
+
+
 
 //#region Vinç kirişini sahneye ekleme/çıkarma fonksiyonu
 export function vinçkirişkaldir() {
@@ -259,3 +308,89 @@ export function üçgenOpaklıkAyarlama() {
   
 }
 //#endregion
+
+
+export function çimekleçıkar(A, B) {
+  const updateGround = () => {
+      const mevcutZemin = scene.getObjectByName('groundGroup');
+      if (mevcutZemin) {
+          scene.remove(mevcutZemin); // Önceki zemini sahneden kaldır
+      }
+
+      const excludeSection = bodrumCheckbox.checked;
+      const Yderinlik = -0.5
+      const taşmamesafe = 25
+      const taşmamesafeTam = 100 
+      const groundGroup = new THREE.Group();
+      groundGroup.name = 'groundGroup';
+
+      if (!excludeSection) {
+          // Tek bir zemin oluştur (Tam alan)
+          const fullGround = new THREE.PlaneGeometry(A + taşmamesafeTam , B + taşmamesafeTam );
+          const fullMesh = new THREE.Mesh(fullGround, ÇimZeminMalzeme1);
+         
+          fullMesh.material.map.wrapS = THREE.RepeatWrapping; // X ekseninde tekrarlama
+          fullMesh.material.map.wrapT = THREE.RepeatWrapping; // Y ekseninde tekrarlama
+          fullMesh.material.map.repeat.set(A/10,B/10); // X ekseninde 2 kez, Y ekseninde 1 kez tekrar      
+          fullMesh.material.map.needsUpdate = true; // Güncellemeyi zorla
+
+          fullMesh.rotation.x = -Math.PI / 2;
+          fullMesh.position.set(A/2, Yderinlik, -B / 2);
+          groundGroup.add(fullMesh);
+      } else {
+          // 1. Plane (Sol Dar Alan)
+          const plane1Geometry = new THREE.PlaneGeometry(taşmamesafe, B + taşmamesafe/2+altradyeçıkıntı*2);
+          const plane1Mesh = new THREE.Mesh(plane1Geometry, ÇimZeminMalzeme1);
+          plane1Mesh.material.map.wrapS = THREE.RepeatWrapping; // X ekseninde tekrarlama
+          plane1Mesh.material.map.wrapT = THREE.RepeatWrapping; // Y ekseninde tekrarlama
+          plane1Mesh.material.map.repeat.set(taşmamesafe/10, B/10); // X ekseninde 2 kez, Y ekseninde 1 kez tekrar      
+          plane1Mesh.material.map.needsUpdate = true; // Güncellemeyi zorla
+
+          plane1Mesh.rotation.x = -Math.PI / 2;
+          plane1Mesh.position.set(-taşmamesafe/2-temelen/2-altradyeçıkıntı/2-bodrumperdekalınlık, Yderinlik, -B / 2+taşmamesafe/4-altradyeçıkıntı);
+          groundGroup.add(plane1Mesh);
+
+          
+          // 3. Plane (Sağ Dar Alan)
+          const plane3Geometry = new THREE.PlaneGeometry(taşmamesafe, B + taşmamesafe/2+altradyeçıkıntı*2);
+          const plane3Mesh = new THREE.Mesh(plane3Geometry, ÇimZeminMalzeme1);
+          plane3Mesh.material.map.wrapS = THREE.RepeatWrapping; // X ekseninde tekrarlama
+          plane3Mesh.material.map.wrapT = THREE.RepeatWrapping; // Y ekseninde tekrarlama
+          plane3Mesh.material.map.repeat.set(taşmamesafe/10, B/10); // X ekseninde 2 kez, Y ekseninde 1 kez tekrar      
+          plane3Mesh.material.map.needsUpdate = true; // Güncellemeyi zorla
+
+          plane3Mesh.rotation.x = -Math.PI / 2;
+          plane3Mesh.position.set(A+taşmamesafe/2+temelen/2+altradyeçıkıntı/2+bodrumperdekalınlık, Yderinlik, -B / 2+taşmamesafe/4-altradyeçıkıntı);
+          groundGroup.add(plane3Mesh);
+
+               // 3. Plane (Alt Alan)
+        const plane2Geometry = new THREE.PlaneGeometry(A+2*taşmamesafe+altradyeçıkıntı+2*bodrumperdekalınlık, taşmamesafe);
+
+        // UV ayarlarını manuel olarak yap
+        const uvAttribute = plane2Geometry.attributes.uv;
+        for (let i = 0; i < uvAttribute.count; i++) {
+            const u = uvAttribute.getX(i);
+            const v = uvAttribute.getY(i);
+
+            // UV koordinatlarını çarpanlarla ölçekleyerek tekrarlama ayarları
+            uvAttribute.setXY(i, u * ((A + 2*taşmamesafe)/ 50), v * (taşmamesafe / 50));
+        }
+
+        const plane2Mesh = new THREE.Mesh(plane2Geometry, ÇimZeminMalzeme1);
+        plane2Mesh.material.map.wrapS = THREE.RepeatWrapping; // X ekseninde tekrarlama
+        plane2Mesh.material.map.wrapT = THREE.RepeatWrapping; // Y ekseninde tekrarlama
+        plane2Mesh.material.map.needsUpdate = true; // Texture güncellemesini zorla
+
+        plane2Mesh.rotation.x = -Math.PI / 2;
+        plane2Mesh.position.set(A/ 2, Yderinlik, -B - taşmamesafe/2-altradyeçıkıntı-bodrumperdekalınlık*2);
+        groundGroup.add(plane2Mesh);
+
+
+      }
+
+      scene.add(groundGroup);
+  };
+
+  bodrumCheckbox.addEventListener('change', updateGround);
+  updateGround(); // İlk çağrı
+}

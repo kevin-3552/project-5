@@ -8,7 +8,6 @@ export let A, B, H, K;  // En, Boy, Yükseklik değişkenleri
 window.YATAYHOLGENİŞLİĞİ; 
 window.YATAYHOLSAYISI;
 window.YATAYAKSSAYISI; 
-window.mobilpikselkenar = 150
 
 
 //#endregion
@@ -18,13 +17,14 @@ window.mobilpikselkenar = 150
 import { applyTranslations } from './translations.js'; // Çevirileri uygula fonksiyonunu içe aktar
 
 import { vinçcheckbox, İlkkutu, İLKFORM, hideButton, maliyetgösterfonk, efcicon} from './container.js'; 
-import { üçdbutonabas, CepheKaplamaCons, SolÇatıKaplamacons,vinçkirişicons, vinçkirişkaldir, üçgenOpaklıkAyarlama, triangleWrapper
+import { üçdbutonabas, CepheKaplamaCons, SolÇatıKaplamacons,vinçkirişicons, vinçkirişkaldir, üçgenOpaklıkAyarlama, 
+  triangleWrapper, çimekleçıkar
     } from './butonfonk.js';  // 
 
 // Nesneler
 import { YATAYKOLONGRUBU, SOLDİYAGONELGRUBU, SAĞDİYAGONELGRUBU, MakasGrupÇoğalt, YanKiriş_1, MakasİçiAltTamBracing, 
   Bracing_MakasİçiTam, ÇaprazYanKomple, ÇatıÇapraz1MakasGrup, ÇatıÇaprazTam, Totem1,CepheKaplamaSağSol, SolÇatıKaplama,
-  MK_UZUNLUK, ZEMİNESAS, VinçKirişi, VincKancasi, loadedFont} from './nesneler.js';  // 
+  MK_UZUNLUK, VinçKirişi, VincKancasi, loadedFont} from './nesneler.js';  // 
 
 // Hesaplar
 import { DİKMEHESAPLA, hesaplaDüşeyAks, hesaplaYatayKolon, ÇATIEĞİMHETKİSİHESAP, MAKASBOYUHESAP, 
@@ -50,8 +50,10 @@ export let currentLanguage = 'tr';  // Varsayılan dil Türkçe
 //#endregion Form ve Butonların Sonu
 
 //#region Buton Çağırmalar
+
 İLKFORM()
 üçgenOpaklıkAyarlama();
+
 
 // Sayfa yüklendiğinde çağır
 document.addEventListener('DOMContentLoaded', () => {
@@ -100,15 +102,6 @@ function addAmbientLight() { // Ambient light ekleme fonksiyonu
 //#endregion
 
 //#region ÇİM & GÖKYÜZÜ Fonksiyonları
-function createGround() { // Çim Zemin ekleme
-  const groundGeometry = new THREE.PlaneGeometry(300, 200);  // 
-  const groundMesh = new THREE.Mesh(groundGeometry, ÇimZeminMalzeme1);
-  groundMesh.rotation.x = -Math.PI / 2; // Yatay hale getiriyoruz
-  groundMesh.position.set(50, -0.2, -50);  // X, Y, Z koordinatları
-  const groundGroup = new THREE.Group();  // Zemini bir grup içinde organize ediyoruz
-  groundGroup.add(groundMesh);
-  scene.add(groundGroup);
-  return groundGroup;} // İleride kontrol için zemini geri döndürüyoruz
 
   function gökyüzüfonksiyon(scene) {
     const textureLoader = new THREE.TextureLoader();
@@ -145,7 +138,6 @@ function init() {
   controls.enableZoom = true;
   addDirectionalLight();    // Işıkları ekleme
   addAmbientLight();
-  const ZeminEkleConst = createGround();
   gökyüzüfonksiyon(scene); // Gökyüzü küresi ekleme
 animate();
 }
